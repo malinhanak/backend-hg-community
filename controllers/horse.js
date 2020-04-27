@@ -4,6 +4,7 @@ const HttpError = require('../models/http-error');
 const Horse = require('../models/horse');
 
 const createHorse = async (req, res, next) => {
+  const { body } = req;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log('validation errors', errors);
@@ -16,16 +17,16 @@ const createHorse = async (req, res, next) => {
   }
 
   const createdHorse = new Horse({
-    name: req.body.name,
-    slug: req.body.slug,
-    facts: req.body.facts,
-    skills: req.body.skills,
-    breeding: req.body.breeding,
+    name: body.name,
+    slug: body.slug,
+    facts: body.facts,
+    skills: body.skills,
+    breeding: body.breeding,
     offsprings: [],
-    pedigree: req.body.pedigree,
-    ownership: req.body.ownership,
-    description: req.body.description,
-    traits: req.body.traits,
+    pedigree: body.pedigree,
+    ownership: body.ownership,
+    description: body.description,
+    traits: body.traits,
     img: 'https://i.ibb.co/qktDQvk/dapplegrey.png',
   });
 
