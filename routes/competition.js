@@ -1,0 +1,1 @@
+// Routes for competition API
