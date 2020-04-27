@@ -11,6 +11,7 @@ const userSchema = new Schema({
   characterName: { type: String, required: true },
   level: { type: String, required: true },
   stable: { type: String },
+  roles: [String],
 });
 
 userSchema.plugin(uniqueValidator);
