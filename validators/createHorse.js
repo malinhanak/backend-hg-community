@@ -1,7 +1,7 @@
 const { check } = require('express-validator');
 
 module.exports = [
-  check('name').not().isEmpty(),
+  check('name').not().isEmpty().withMessage('Name is required'),
   check('slug').not().isEmpty(),
   check('facts.born').not().isEmpty(),
   check('facts.height').not().isEmpty(),
