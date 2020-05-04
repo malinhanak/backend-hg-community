@@ -7,7 +7,9 @@ function routes(Horse) {
   const horseRouter = express.Router();
   const controllers = horseControllers(Horse);
 
-  horseRouter.route('/').post(controllers.createHorse);
+  horseRouter.route('/')
+    .post(createHorseValidator, controllers.createHorse)
+    .get(controllers.getAllHorses);
 
   return horseRouter;
 }

@@ -1,17 +1,18 @@
 const should = require('should');
 const sinon = require('sinon');
+const expect = require('chai').expect;
 
 const horseController = require('../controllers/horse');
 const horseReqBody = require('../utils/horseBodyTest');
 
 describe('Horse controller test: ', () => {
   describe('Create horse', () => {
-    it('should create a new horse', () => {
+    it('should create a new horse', async () => {
       const Horse = function (horse) {
         this.save = () => {};
       };
 
-      const req = horseReqBody;
+      const req = {body: horseReqBody};
 
       const res = {
         status: sinon.spy(),
@@ -20,11 +21,10 @@ describe('Horse controller test: ', () => {
       };
 
       const controller = horseController(Horse);
-      const createdHorse = controller.createHorse(req, res, () => {});
+      await controller.createHorse(req, res, () => {});
 
-      // res.status.calledWith(201).should.equal(true);
-      res.json.calledWith();
-      // res.json.calledWith('Name is required').should.equal(true);
+      expect(res.status.args[ 0 ][ 0 ]).equal(201);
+      expect(res.json.calledOnce).to.equal(true);
     });
   });
 });

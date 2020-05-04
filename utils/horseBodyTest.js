@@ -8,7 +8,7 @@ module.exports = {
     type: 'Pony',
     cat: 'D',
   },
-  skills: [{ discipline: 'Hoppning', level: '1' }],
+  skills: [ {discipline: 'Hoppning', level: '1'} ],
   breeding: {
     status: false,
     inheritanceScore: 3,
@@ -27,6 +27,6 @@ module.exports = {
   },
   description:
     'Allt om svarten är en lögn... haha, <strong>fet</strong>, <em>italic</em></ br>Line break!',
-  traits: ['Snabb', 'Busig', 'Svårriden'],
+  traits: [ 'Snabb', 'Busig', 'Svårriden' ],
   img: 'https://i.ibb.co/qktDQvk/dapplegrey.png',
 };

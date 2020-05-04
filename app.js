@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 
 db.connect()
   .then(() => {
-    app.listen(PORT, () => {
+    app.server = app.listen(PORT, () => {
       console.log('DB is running, listening on port ' + PORT);
     });
   })
