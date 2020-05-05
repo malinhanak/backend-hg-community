@@ -110,11 +110,7 @@ describe('Horse Controller', function () {
     };
 
     const res = {
-      statusCode: 500,
-      errors: null,
-      status: function (code) {
-        this.statusCode = code;
-      },
+      status: sinon.spy(),
       json: sinon.spy(),
     };
 
@@ -123,7 +119,7 @@ describe('Horse Controller', function () {
       .then((horse) => {
         console.log('test horse', horse);
         expect(horse).to.be.undefined;
-        expect(res.statusCode).to.equal(404);
+        expect(res.status.args[0][0]).to.equal(404);
         done();
       });
   });

@@ -12,6 +12,15 @@ const horseReqBody = require('../utils/horseBodyTest');
 const db = require('../db');
 
 describe('Horse CRUD test', function () {
+  before(function (done) {
+    db.connect()
+      .then(() => {
+        const horse = new Horse(horseDataBody);
+        return horse.save();
+      })
+      .then(() => done());
+  });
+
   it('should post a horse a return horse object', function (done) {
     const horsePost = horseReqBody;
 
@@ -57,29 +66,32 @@ describe('Horse CRUD test', function () {
       });
   });
 
-
   it('should get all horses', function (done) {
     agent
       .get('/api/horses/')
       .expect(200)
       .end((err, result) => {
-        console.log('err', err)
+        console.log('err', err);
         if (err) return done(err);
 
         expect(result.body).to.be.a('Object');
         expect(result.body.horses).to.be.a('Array');
-        expect(result.body.horses[ 0 ]).to.have.property('name')
+        expect(result.body.horses[0]).to.have.property('name');
         done();
       });
   });
 
-  before(function (done) {
-    Horse.deleteMany({}).exec();
-    done();
-  });
-
   after(function (done) {
-    app.server.close();
-    db.close(done());
+    Horse.deleteMany({}).then(() => {
+      db.close()
+        .then(() => {
+          console.log('db disconnected');
+          app.server.close(() => {
+            console.log('server closed');
+            process.exit(0);
+          });
+        })
+        .then(() => done());
+    });
   });
 });

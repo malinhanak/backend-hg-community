@@ -4,7 +4,7 @@ const Horse = require('../models/horse');
 
 process.env.NODE_ENV = 'Test';
 
-describe('Horse model', function () {
+describe('HORSE MODEL', function () {
   it('should be invalid if name is empty', function (done) {
     const horse = new Horse();
 
