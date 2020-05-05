@@ -38,7 +38,6 @@ describe('Horse Controller', function () {
     horseController
       .createHorse(req, res, () => {})
       .then((createdHorse) => {
-        // console.log('RESULT', createdHorse);
         expect(res.statusCode).to.equal(201);
         expect(createdHorse).to.be.an('object');
         expect(createdHorse).to.have.property('name').that.is.a('string');
@@ -66,7 +65,6 @@ describe('Horse Controller', function () {
     horseController
       .getAllHorses({}, res, () => {})
       .then((result) => {
-        // console.log('RESULT', result);
         expect(result).to.be.an('array');
         expect(result[0]).to.have.property('_id');
         expect(result[0]).to.have.property('name').that.is.a('string');
