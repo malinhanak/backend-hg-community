@@ -2,9 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const HttpError = require('./models/http-error');
-const Horse = require('./models/horse');
 const User = require('./models/user');
-const horsesRouter = require('./routes/horseRouter')(Horse);
+const horsesRouter = require('./routes/horseRouter');
 const userRouter = require('./routes/userRouter')(User);
 const db = require('./db');
 

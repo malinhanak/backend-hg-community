@@ -3,15 +3,13 @@ const express = require('express');
 const createHorseValidator = require('../validators/createHorse');
 const horseControllers = require('../controllers/horse');
 
-function routes(Horse) {
-  const horseRouter = express.Router();
-  const controllers = horseControllers(Horse);
+const horseRouter = express.Router();
 
-  horseRouter.route('/')
-    .post(createHorseValidator, controllers.createHorse)
-    .get(controllers.getAllHorses);
+horseRouter
+  .route('/')
+  .post(createHorseValidator, horseControllers.createHorse)
+  .get(horseControllers.getAllHorses);
 
-  return horseRouter;
-}
+horseRouter.route('/:slug').get(horseControllers.getHorseBySlug);
 
-module.exports = routes;
+module.exports = horseRouter;
