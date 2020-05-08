@@ -13,8 +13,6 @@ app.use(bodyParser.json());
 
 app.use('/api/users', userRouter);
 app.use('/api/horses', horsesRouter);
-// app.use('/api/updates', userRoutes);
-// app.use('/api/cms', userRoutes);
 
 app.use((req, res, next) => {
   throw new HttpError('Could not find the requested route', 404);
