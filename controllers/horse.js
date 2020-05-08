@@ -1,57 +1,43 @@
 const { validationResult } = require('express-validator');
-const GenericErrorHandler = require('../utils/genericErrorObj');
-const HttpError = require('../models/http-error');
+
 const Horse = require('../models/horse');
+const { errorHandler } = require('../utils/errorHandler');
 
 async function createHorse(req, res, next) {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(422);
-    return res.json(
-      GenericErrorHandler(
-        'Kontrollera din data, fält saknas eller är felaktiga',
-        errors.errors,
-      ),
-    );
-  }
-
-  const createdHorse = new Horse(req.body);
 
   try {
-    await createdHorse.save();
+    if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
   } catch (err) {
-    return next(
-      new HttpError(
-        'Det gick inte att skapa hästen, vänligen försök igen',
-        500,
-      ),
-    );
+    errorHandler(err, next, errors.errors);
   }
 
-  res.status(201);
-  res.json({ horse: createdHorse });
-  return createdHorse;
-}
+  try {
+    const createdHorse = new Horse(req.body);
 
-function collectAndSendHorses(horses, res) {
-  res.status(200);
-  return res.json({
-    horses: horses.map((horse) => horse.toObject({ getters: true })),
-  });
+    await createdHorse.save();
+
+    res.status(201).json({ horse: createdHorse });
+
+    return createdHorse;
+  } catch (err) {
+    errorHandler(err, next);
+  }
 }
 
 async function getAllHorses(req, res, next) {
   try {
     const horses = await Horse.find({}, 'name slug _id');
-    collectAndSendHorses(horses, res);
-    return horses; // <--- Seems like I need to return like this to make the tests work, saw the same pattern in a course.
+
+    if (horses.length < 1) throw new Error('noRegisteredHorses');
+
+    res.status(200).json({
+      horses: horses.map((horse) => horse.toObject({ getters: true })),
+    });
+
+    return horses;
   } catch (err) {
-    next(
-      new HttpError(
-        'Det gick inte att hämta alla hästar, vänligen försök igen',
-        500,
-      ),
-    );
+    errorHandler(err, next);
   }
 }
 
@@ -61,22 +47,13 @@ async function getHorseBySlug(req, res, next) {
   try {
     const horse = await Horse.findOne({ slug: slug });
 
-    if (!horse) {
-      res.status(404);
-      const error = new HttpError('Vi kunde inte hitta hästen du söker', 404);
-      return next(error);
-    }
+    if (!horse) throw new Error('horseNotFound');
 
-    res.status(200);
-    res.json({ horse: horse.toObject({ getters: true }) });
+    res.status(200).json({ horse });
+
     return horse;
   } catch (err) {
-    next(
-      new HttpError(
-        'Det gick inte att hämta hästen, vänligen försök igen',
-        500,
-      ),
-    );
+    errorHandler(err, next);
   }
 }
 
