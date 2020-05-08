@@ -31,6 +31,7 @@ describe('Horse Controller', function () {
       statusCode: 500,
       status: function (code) {
         this.statusCode = code;
+        return this;
       },
       json: sinon.spy(),
     };
@@ -58,6 +59,7 @@ describe('Horse Controller', function () {
       statusCode: 500,
       status: function (code) {
         this.statusCode = code;
+        return this;
       },
       json: sinon.spy(),
     };
@@ -82,6 +84,7 @@ describe('Horse Controller', function () {
       statusCode: 500,
       status: function (code) {
         this.statusCode = code;
+        return this;
       },
       json: sinon.spy(),
     };
@@ -98,26 +101,6 @@ describe('Horse Controller', function () {
           .to.have.property('ownership')
           .that.is.a('object')
           .that.has.property('owner');
-        done();
-      });
-  });
-
-  it('should return error if failed to find one horse', function (done) {
-    const req = {
-      params: { slug: 'miominmio' },
-    };
-
-    const res = {
-      status: sinon.spy(),
-      json: sinon.spy(),
-    };
-
-    horseController
-      .getHorseBySlug(req, res, () => {})
-      .then((horse) => {
-        console.log('test horse', horse);
-        expect(horse).to.be.undefined;
-        expect(res.status.args[0][0]).to.equal(404);
         done();
       });
   });
