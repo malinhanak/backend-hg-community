@@ -107,15 +107,13 @@ describe('Horse Controller', function () {
 
   after(function (done) {
     Horse.deleteMany({}).then(() => {
-      db.close()
-        .then(() => {
-          console.log('db disconnected');
-          app.server.close(() => {
-            console.log('server closed');
-            process.exit(0);
-          });
-        })
-        .then(() => done());
+      db.close().then(() => {
+        console.log('db disconnected');
+        app.server.close(() => {
+          console.log('server closed');
+          done();
+        });
+      });
     });
   });
 });

@@ -13,12 +13,11 @@ const db = require('../db');
 
 describe('Horse CRUD test', function () {
   before(function (done) {
-    db.connect()
-      .then(() => {
-        const horse = new Horse(horseDataBody);
-        return horse.save();
-      })
-      .then(() => done());
+    db.connect().then(() => {
+      const horse = new Horse(horseReqBody);
+      horse.save();
+      done();
+    });
   });
 
   it('should post a horse a return horse object', function (done) {
@@ -83,15 +82,13 @@ describe('Horse CRUD test', function () {
 
   after(function (done) {
     Horse.deleteMany({}).then(() => {
-      db.close()
-        .then(() => {
-          console.log('db disconnected');
-          app.server.close(() => {
-            console.log('server closed');
-            process.exit(0);
-          });
-        })
-        .then(() => done());
+      db.close().then(() => {
+        console.log('db disconnected');
+        app.server.close(() => {
+          console.log('server closed');
+          done();
+        });
+      });
     });
   });
 });
