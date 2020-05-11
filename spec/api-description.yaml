@@ -1,0 +1,113 @@
+swagger: '2.0'
+
+info:
+  version: 1.0.0
+  title: 'Horse Galore API'
+  basePath: '/api'
+  host: 'https://horse-galore.herokuapp.com'
+  description: |
+    # Overview
+    This a documention of Horse Galors API.
+paths:
+  /horses:
+    get:
+      tags:
+        - Horse
+      summary: GET all horses
+      decription: Retrieve all registered horses
+      operationId: getAllHorses
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: The horse ID.
+              name:
+                type: string
+                description: The horse name (ex. Mio Min Mio).
+              slug:
+                type: string
+                description: The horse slug (ex. miominmio).
+        '400':
+          description: Bad request
+        '404':
+          description: No horses found
+    post:
+      tags:
+        - Horse
+      summary: Add a new horse to the barn
+      description: Add a new horse to main the barn.
+      operationId: createHorse
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Horse object that needs to be added to the barn
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            description: Must contain owner key as a minimum.
+            properties:
+              horse:
+                type: object
+                properties:
+                  ownership:
+                    type: object
+                    properties:
+                      owner:
+                        type: object
+                        properties:
+                          id: string
+                          name: string
+                        example: { id: '45432333', name: 'HG Admin' }
+                  offspring:
+                    type: array
+                    items:
+                      type: string
+                    description: A list of offsprings, listed by ID.
+                  traits:
+                    type: array
+                    items:
+                      type: string
+                    example: ['Busig', 'Svårriden', 'Hoppig']
+                  _id:
+                    type: string
+                  name:
+                    type: string
+                    example: 'Mio Min Mio'
+                  slug:
+                    type: string
+                    example: 'miominmio'
+                  facts:
+                    type: object
+                    properties:
+                      born:
+                        type: string
+                      height:
+                        type: integer
+                      breed:
+                        type: string
+                      type:
+                        type: string
+                      cat:
+                        type: string
+                  skills:
+                    type: array
+                    items:
+                      type: string
+                    example:
+        '422':
+          description: Invalid or missing input
+        '500':
+          description: Something went wrong!
