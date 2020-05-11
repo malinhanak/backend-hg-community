@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const { errorHandler } = require('../utils/errorHandler');
 
-async function createUser(req, res, next) {
+async function create(req, res, next) {
   const errors = validationResult(req);
 
   try {
@@ -34,4 +34,4 @@ async function createUser(req, res, next) {
   }
 }
 
-exports.createUser = createUser;
+exports.create = create;

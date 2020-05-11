@@ -7,9 +7,9 @@ const horseRouter = express.Router();
 
 horseRouter
   .route('/')
-  .post(createHorseValidator, horseControllers.createHorse)
-  .get(horseControllers.getAllHorses);
+  .post(createHorseValidator, horseControllers.create)
+  .get(horseControllers.getAll);
 
-horseRouter.route('/:slug').get(horseControllers.getHorseBySlug);
+horseRouter.route('/:slug').get(horseControllers.getBySlug);
 
 module.exports = horseRouter;

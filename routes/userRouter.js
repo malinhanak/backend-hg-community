@@ -5,8 +5,6 @@ const userControllers = require('../controllers/user');
 
 const userRouter = express.Router();
 
-userRouter
-  .route('/signup')
-  .post(createUserValidator, userControllers.createUser);
+userRouter.route('/signup').post(createUserValidator, userControllers.create);
 
 module.exports = userRouter;

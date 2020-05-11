@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const Horse = require('../models/horse');
 const { errorHandler } = require('../utils/errorHandler');
 
-async function createHorse(req, res, next) {
+async function create(req, res, next) {
   const errors = validationResult(req);
 
   try {
@@ -25,7 +25,7 @@ async function createHorse(req, res, next) {
   }
 }
 
-async function getAllHorses(req, res, next) {
+async function getAll(req, res, next) {
   try {
     const horses = await Horse.find({}, 'name slug _id');
 
@@ -41,7 +41,7 @@ async function getAllHorses(req, res, next) {
   }
 }
 
-async function getHorseBySlug(req, res, next) {
+async function getBySlug(req, res, next) {
   const slug = req.params.slug;
 
   try {
@@ -57,6 +57,6 @@ async function getHorseBySlug(req, res, next) {
   }
 }
 
-exports.createHorse = createHorse;
-exports.getAllHorses = getAllHorses;
-exports.getHorseBySlug = getHorseBySlug;
+exports.create = create;
+exports.getAll = getAll;
+exports.getBySlug = getBySlug;
