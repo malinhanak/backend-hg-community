@@ -7,6 +7,9 @@ community page with horse interest and RPG.
 
 ## Development documentation
 
+When the server is running, current API documentations can be found on
+`/api/docs`.
+
 This project needs connection to a mongoDB atlas instance, using database:
 `hg-dv` and `hg_TEST`, with collections `horses` and `users`, in both. For
 development and tests.
