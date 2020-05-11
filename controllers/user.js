@@ -8,7 +8,7 @@ async function createUser(req, res, next) {
   try {
     if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
   } catch (err) {
-    errorHandler(err, next, errors.errors);
+    return errorHandler(err, next, errors.errors);
   }
 
   try {
@@ -16,7 +16,7 @@ async function createUser(req, res, next) {
 
     if (isUserExisting) throw new Error('userAlreadyExists');
   } catch (err) {
-    errorHandler(err, next);
+    return errorHandler(err, next);
   }
 
   try {
@@ -30,7 +30,7 @@ async function createUser(req, res, next) {
 
     return createdUser;
   } catch (err) {
-    errorHandler(err, next);
+    return errorHandler(err, next);
   }
 }
 

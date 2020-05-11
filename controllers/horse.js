@@ -9,7 +9,7 @@ async function createHorse(req, res, next) {
   try {
     if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
   } catch (err) {
-    errorHandler(err, next, errors.errors);
+    return errorHandler(err, next, errors.errors);
   }
 
   try {
@@ -21,7 +21,7 @@ async function createHorse(req, res, next) {
 
     return createdHorse;
   } catch (err) {
-    errorHandler(err, next);
+    return errorHandler(err, next);
   }
 }
 
@@ -37,7 +37,7 @@ async function getAllHorses(req, res, next) {
 
     return horses;
   } catch (err) {
-    errorHandler(err, next);
+    return errorHandler(err, next);
   }
 }
 
@@ -53,7 +53,7 @@ async function getHorseBySlug(req, res, next) {
 
     return horse;
   } catch (err) {
-    errorHandler(err, next);
+    return errorHandler(err, next);
   }
 }
 
