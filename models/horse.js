@@ -6,8 +6,8 @@ const Schema = mongoose.Schema;
 const SkillsSchema = new Schema({ discipline: String, level: String });
 
 const HorseSchema = new Schema({
-  name: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true },
+  slug: { type: String, required: true },
   facts: {
     born: { type: Number, required: true },
     height: { type: Number, required: true },
