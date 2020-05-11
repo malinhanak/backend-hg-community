@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const Schema = mongoose.Schema;
 
 const SkillsSchema = new Schema({ discipline: String, level: String });
 
 const HorseSchema = new Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   slug: { type: String, required: true },
   facts: {
     born: { type: Number, required: true },
@@ -44,5 +45,7 @@ const HorseSchema = new Schema({
   traits: [String],
   img: { type: String, required: true },
 });
+
+HorseSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model('Horse', HorseSchema);

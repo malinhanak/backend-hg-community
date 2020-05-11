@@ -1,46 +1,62 @@
 const { validationResult } = require('express-validator');
 
-const HttpError = require('../models/http-error');
 const Horse = require('../models/horse');
+const { errorHandler } = require('../utils/errorHandler');
 
-const createHorse = async (req, res, next) => {
-  const { body } = req;
+async function createHorse(req, res, next) {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log('validation errors', errors);
-    return next(
-      new HttpError(
-        'Kontrollera din data, fält saknas eller är felaktiga',
-        422,
-      ),
-    );
-  }
-
-  const createdHorse = new Horse({
-    name: body.name,
-    slug: body.slug,
-    facts: body.facts,
-    skills: body.skills,
-    breeding: body.breeding,
-    offsprings: [],
-    pedigree: body.pedigree,
-    ownership: body.ownership,
-    description: body.description,
-    traits: body.traits,
-    img: 'https://i.ibb.co/qktDQvk/dapplegrey.png',
-  });
 
   try {
-    await createdHorse.save();
+    if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
   } catch (err) {
-    const error = new HttpError(
-      'Det gick inte att skapa hästen, vänligen försök igen',
-      500,
-    );
-    return next(error);
+    errorHandler(err, next, errors.errors);
   }
 
-  res.status(201).json({ horse: createdHorse });
-};
+  try {
+    const createdHorse = new Horse(req.body);
+
+    await createdHorse.save();
+
+    res.status(201).json({ horse: createdHorse });
+
+    return createdHorse;
+  } catch (err) {
+    errorHandler(err, next);
+  }
+}
+
+async function getAllHorses(req, res, next) {
+  try {
+    const horses = await Horse.find({}, 'name slug _id');
+
+    if (horses.length < 1) throw new Error('noRegisteredHorses');
+
+    res.status(200).json({
+      horses: horses.map((horse) => horse.toObject({ getters: true })),
+    });
+
+    return horses;
+  } catch (err) {
+    errorHandler(err, next);
+  }
+}
+
+async function getHorseBySlug(req, res, next) {
+  const slug = req.params.slug;
+
+  try {
+    const horse = await Horse.findOne({ slug: slug });
+
+    if (!horse) throw new Error('horseNotFound');
+
+    res.status(200).json({ horse });
+
+    return horse;
+  } catch (err) {
+    errorHandler(err, next);
+  }
+}
 
 exports.createHorse = createHorse;
+exports.getAllHorses = getAllHorses;
+exports.getHorseBySlug = getHorseBySlug;
