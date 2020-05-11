@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
+
 const HttpError = require('./models/http-error');
 const horsesRouter = require('./routes/horseRouter');
 const userRouter = require('./routes/userRouter');
@@ -13,6 +15,9 @@ app.use(bodyParser.json());
 
 app.use('/api/users', userRouter);
 app.use('/api/horses', horsesRouter);
+app.use('/api/docs', (req, res, next) => {
+  res.sendFile(path.join(__dirname + '/docs/index.html'));
+});
 
 app.use((req, res, next) => {
   throw new HttpError('Could not find the requested route', 404);
