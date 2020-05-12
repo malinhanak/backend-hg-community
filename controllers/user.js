@@ -1,6 +1,5 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
-const { errorHandler } = require('../utils/errorHandler');
 
 async function create(req, res, next) {
   const errors = validationResult(req);
@@ -8,7 +7,7 @@ async function create(req, res, next) {
   try {
     if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
   } catch (err) {
-    return errorHandler(err, next, errors.errors);
+    return next(err);
   }
 
   try {
@@ -16,7 +15,7 @@ async function create(req, res, next) {
 
     if (isUserExisting) throw new Error('userAlreadyExists');
   } catch (err) {
-    return errorHandler(err, next);
+    return next(err);
   }
 
   try {
@@ -30,7 +29,7 @@ async function create(req, res, next) {
 
     return createdUser;
   } catch (err) {
-    return errorHandler(err, next);
+    return next(err);
   }
 }
 

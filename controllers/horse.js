@@ -1,15 +1,15 @@
 const { validationResult } = require('express-validator');
+const asyncHandler = require('express-async-handler');
 
+const HorseNotFoundError = require('../models/errors/HorseNotFoundError');
+const MissingOrInvalidInputError = require('../models/errors/MissingOrInvalidInputError');
 const Horse = require('../models/horse');
-const { errorHandler } = require('../utils/errorHandler');
 
 async function create(req, res, next) {
   const errors = validationResult(req);
 
-  try {
-    if (!errors.isEmpty()) throw new Error('missingOrInvalidInputs');
-  } catch (err) {
-    return errorHandler(err, next, errors.errors);
+  if (!errors.isEmpty()) {
+    return next(new MissingOrInvalidInputError(`Invalid inputs`));
   }
 
   try {
@@ -21,7 +21,7 @@ async function create(req, res, next) {
 
     return createdHorse;
   } catch (err) {
-    return errorHandler(err, next);
+    return next(err);
   }
 }
 
@@ -29,7 +29,9 @@ async function getAll(req, res, next) {
   try {
     const horses = await Horse.find({}, 'name slug _id');
 
-    if (horses.length < 1) throw new Error('noRegisteredHorses');
+    if (!horses.length) {
+      return next(new HorseNotFoundError(`There are no horses registered or they have escaped`));
+    }
 
     res.status(200).json({
       horses: horses.map((horse) => horse.toObject({ getters: true })),
@@ -37,7 +39,7 @@ async function getAll(req, res, next) {
 
     return horses;
   } catch (err) {
-    return errorHandler(err, next);
+    return next(err);
   }
 }
 
@@ -47,13 +49,15 @@ async function getBySlug(req, res, next) {
   try {
     const horse = await Horse.findOne({ slug: slug });
 
-    if (!horse) throw new Error('horseNotFound');
+    if (!horse) {
+      return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    }
 
     res.status(200).json({ horse });
 
     return horse;
   } catch (err) {
-    return errorHandler(err, next);
+    return next(err);
   }
 }
 
