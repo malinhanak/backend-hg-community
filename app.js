@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-const HttpError = require('./models/http-error');
+const HttpError = require('./models/errors/HttpError');
 const horsesRouter = require('./routes/horseRouter');
 const userRouter = require('./routes/userRouter');
 const db = require('./db');
@@ -24,9 +24,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  return res
-    .status(error.code)
-    .json({ message: error.message, error: error.error });
+  return res.status(error.code).json({ message: error.message, error: error.errors });
 });
 
 db.connect()
