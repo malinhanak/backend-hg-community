@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const asyncHandler = require('express-async-handler');
+const { asyncWrapper } = require('../utils/asyncWrapper');
 
 const HorseNotFoundError = require('../models/errors/HorseNotFoundError');
 const MissingOrInvalidInputError = require('../models/errors/MissingOrInvalidInputError');
@@ -12,55 +12,42 @@ async function create(req, res, next) {
     return next(new MissingOrInvalidInputError(`Invalid inputs`));
   }
 
-  try {
-    const createdHorse = new Horse(req.body);
+  const createdHorse = new Horse(req.body);
 
-    await createdHorse.save();
+  await createdHorse.save();
 
-    res.status(201).json({ horse: createdHorse });
+  res.status(201).json({ horse: createdHorse });
 
-    return createdHorse;
-  } catch (err) {
-    return next(err);
-  }
+  return createdHorse;
 }
 
 async function getAll(req, res, next) {
-  try {
-    const horses = await Horse.find({}, 'name slug _id');
+  const horses = await Horse.find({}, 'name slug _id');
 
-    if (!horses.length) {
-      return next(new HorseNotFoundError(`There are no horses registered or they have escaped`));
-    }
-
-    res.status(200).json({
-      horses: horses.map((horse) => horse.toObject({ getters: true })),
-    });
-
-    return horses;
-  } catch (err) {
-    return next(err);
+  if (!horses.length) {
+    return next(new HorseNotFoundError(`There are no horses registered or they have escaped`));
   }
+
+  res.status(200).json({
+    horses: horses.map((horse) => horse.toObject({ getters: true })),
+  });
+
+  return horses;
 }
 
 async function getBySlug(req, res, next) {
   const slug = req.params.slug;
+  const horse = await Horse.findOne({ slug: slug });
 
-  try {
-    const horse = await Horse.findOne({ slug: slug });
-
-    if (!horse) {
-      return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
-    }
-
-    res.status(200).json({ horse });
-
-    return horse;
-  } catch (err) {
-    return next(err);
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
   }
+
+  res.status(200).json({ horse });
+
+  return horse;
 }
 
-exports.create = create;
-exports.getAll = getAll;
-exports.getBySlug = getBySlug;
+exports.create = asyncWrapper(create);
+exports.getAll = asyncWrapper(getAll);
+exports.getBySlug = asyncWrapper(getBySlug);
