@@ -3,7 +3,10 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const Schema = mongoose.Schema;
 
-const SkillsSchema = new Schema({ discipline: String, level: String });
+const SkillsSchema = new Schema({
+  discipline: { type: String, required: true, enum: ['Dressyr', 'Hoppning', 'Körning'] },
+  level: String,
+});
 
 const HorseSchema = new Schema({
   name: { type: String, required: true, unique: true },
