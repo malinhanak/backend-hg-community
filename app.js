@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  return res.status(error.code).json({ message: error.message, error: error.errors });
+  return res.status(error.code).json({ message: error.message, error: error.errors }) || res.status(500);
 });
 
 db.connect()
