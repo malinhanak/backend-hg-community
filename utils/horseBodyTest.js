@@ -1,6 +1,4 @@
 module.exports = {
-  name: '',
-  slug: '',
   facts: {
     born: 2013,
     height: 145,
