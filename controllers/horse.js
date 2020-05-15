@@ -1,22 +1,28 @@
 const { validationResult } = require('express-validator');
 const { asyncWrapper } = require('../utils/asyncWrapper');
+const { createSlug } = require('../utils/createSlug');
 
 const HorseNotFoundError = require('../models/errors/HorseNotFoundError');
 const MissingOrInvalidInputError = require('../models/errors/MissingOrInvalidInputError');
+const DataBaseError = require('../models/errors/DataBaseError');
 const Horse = require('../models/horse');
 
 async function create(req, res, next) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return next(new MissingOrInvalidInputError(`Invalid inputs`));
+    return next(new MissingOrInvalidInputError(`Invalid inputs`, errors.errors));
   }
 
-  const createdHorse = new Horse(req.body);
+  const newHorse = await { ...req.body, slug: createSlug(req.body.name) };
 
-  await createdHorse.save();
+  const createdHorse = new Horse(newHorse);
 
-  res.status(201).json({ horse: createdHorse });
+  try {
+    await createdHorse.save();
+  } catch (err) {
+    return next(new DataBaseError(err.message));
+  }
 
   return createdHorse;
 }

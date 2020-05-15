@@ -8,23 +8,26 @@ const horseController = require('../controllers/horse');
 const horseDataBody = require('../utils/horseBodyTest');
 const app = require('../app');
 const db = require('../db');
+const { createSlug } = require('../utils/createSlug');
 
 describe('Horse Controller', function () {
-  before(function (done) {
-    db.connect()
-      .then(() => {
-        const horse = new Horse(horseDataBody);
-        return horse.save();
-      })
-      .then(() => done());
+  before(function () {
+    const testData = { ...horseDataBody };
+    testData.name = 'Ymers Dream Q';
+    testData.slug = createSlug(testData.name);
+    db.connect().then(() => {
+      const horse = new Horse(testData);
+      return horse.save();
+    });
   });
 
-  it('should create a new horse', function (done) {
-    horseDataBody.name = 'Test 2';
-    horseDataBody.slug = 'test-2';
+  it('should create a new horse', function () {
+    const testData = { ...horseDataBody };
+    testData.name = 'Haniball Lecter Q';
+    testData.slug = createSlug(testData.name);
 
     const req = {
-      body: horseDataBody,
+      body: testData,
     };
 
     const res = {
@@ -36,8 +39,8 @@ describe('Horse Controller', function () {
       json: sinon.spy(),
     };
 
-    horseController
-      .createHorse(req, res, () => {})
+    return horseController
+      .create(req, res, () => {})
       .then((createdHorse) => {
         expect(res.statusCode).to.equal(201);
         expect(createdHorse).to.be.an('object');
@@ -49,12 +52,11 @@ describe('Horse Controller', function () {
           .that.is.a('object')
           .that.has.property('owner')
           .that.has.property('name', 'HG Admin');
-        done();
       })
       .catch((err) => console.log('ERROR: ', err));
   });
 
-  it('should have return an array of all horses upon request, that only contains name, slug and id', function (done) {
+  it('should have return an array of all horses upon request, that only contains name, slug and id', function () {
     const res = {
       statusCode: 500,
       status: function (code) {
@@ -64,20 +66,19 @@ describe('Horse Controller', function () {
       json: sinon.spy(),
     };
 
-    horseController
-      .getAllHorses({}, res, () => {})
+    return horseController
+      .getAll({}, res, () => {})
       .then((result) => {
         expect(result).to.be.an('array');
         expect(result[0]).to.have.property('_id');
         expect(result[0]).to.have.property('name').that.is.a('string');
         expect(result[0]).to.have.property('slug').that.is.a('string');
-        done();
       });
   });
 
-  it('should return one requested horse, full document', function (done) {
+  it('should return one requested horse, full document', function () {
     const req = {
-      params: { slug: 'test-2' },
+      params: { slug: 'ymers-dream-q' },
     };
 
     const res = {
@@ -89,29 +90,24 @@ describe('Horse Controller', function () {
       json: sinon.spy(),
     };
 
-    horseController
-      .getHorseBySlug(req, res, () => {})
+    return horseController
+      .getBySlug(req, res, () => {})
       .then((horse) => {
         expect(res.statusCode).to.equal(200);
         expect(horse).to.be.an('object');
         expect(horse).to.have.property('_id');
         expect(horse).to.have.property('name').that.is.a('string');
-        expect(horse).to.have.property('slug', 'test-2').that.is.a('string');
-        expect(horse)
-          .to.have.property('ownership')
-          .that.is.a('object')
-          .that.has.property('owner');
-        done();
+        expect(horse).to.have.property('slug', 'ymers-dream-q').that.is.a('string');
+        expect(horse).to.have.property('ownership').that.is.a('object').that.has.property('owner');
       });
   });
 
-  after(function (done) {
+  after(function () {
     Horse.deleteMany({}).then(() => {
       db.close().then(() => {
         console.log('db disconnected');
         app.server.close(() => {
           console.log('server closed');
-          done();
         });
       });
     });
