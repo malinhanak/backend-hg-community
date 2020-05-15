@@ -1,4 +1,10 @@
-<img src="https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge">
+<img alt="Last commit" src="https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge">
+
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/malinhanak/backend-hg-community?style=for-the-badge">
+
+<img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed-raw/malinhanak/backend-hg-community?style=for-the-badge">
+
+<img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/malinhanak/backend-hg-community?style=for-the-badge">
 
 # Horse Galore [Backend Project]
 
