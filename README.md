@@ -1,4 +1,4 @@
-https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge
+<img src="https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge">
 
 # Horse Galore [Backend Project]
 
