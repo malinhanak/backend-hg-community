@@ -8,23 +8,24 @@ const horseController = require('../controllers/horse');
 const horseDataBody = require('../utils/horseBodyTest');
 const app = require('../app');
 const db = require('../db');
+const { createSlug } = require('../utils/createSlug');
 
 describe('Horse Controller', function () {
   before(function (done) {
+    const testData = { ...horseDataBody, name: 'Dreaming Big Q', slug: createSlug('Dreaming Big Q') };
     db.connect()
       .then(() => {
-        const horse = new Horse(horseDataBody);
+        const horse = new Horse(testData);
         return horse.save();
       })
       .then(() => done());
   });
 
   it('should create a new horse', function (done) {
-    horseDataBody.name = 'Test 2';
-    horseDataBody.slug = 'test-2';
+    const testData = { ...horseDataBody, name: 'Rocka Fellow Q', slug: createSlug('Rocka Fellow Q') };
 
     const req = {
-      body: horseDataBody,
+      body: testData,
     };
 
     const res = {
@@ -37,7 +38,7 @@ describe('Horse Controller', function () {
     };
 
     horseController
-      .createHorse(req, res, () => {})
+      .create(req, res, () => {})
       .then((createdHorse) => {
         expect(res.statusCode).to.equal(201);
         expect(createdHorse).to.be.an('object');
@@ -65,7 +66,7 @@ describe('Horse Controller', function () {
     };
 
     horseController
-      .getAllHorses({}, res, () => {})
+      .getAll({}, res, () => {})
       .then((result) => {
         expect(result).to.be.an('array');
         expect(result[0]).to.have.property('_id');
@@ -77,7 +78,7 @@ describe('Horse Controller', function () {
 
   it('should return one requested horse, full document', function (done) {
     const req = {
-      params: { slug: 'test-2' },
+      params: { slug: 'dreaming-big-q' },
     };
 
     const res = {
@@ -90,22 +91,20 @@ describe('Horse Controller', function () {
     };
 
     horseController
-      .getHorseBySlug(req, res, () => {})
+      .getBySlug(req, res, () => {})
       .then((horse) => {
         expect(res.statusCode).to.equal(200);
         expect(horse).to.be.an('object');
         expect(horse).to.have.property('_id');
         expect(horse).to.have.property('name').that.is.a('string');
-        expect(horse).to.have.property('slug', 'test-2').that.is.a('string');
-        expect(horse)
-          .to.have.property('ownership')
-          .that.is.a('object')
-          .that.has.property('owner');
+        expect(horse).to.have.property('slug', 'dreaming-big-q').that.is.a('string');
+        expect(horse).to.have.property('ownership').that.is.a('object').that.has.property('owner');
         done();
       });
   });
 
   after(function (done) {
+    console.log('closing horse-controller');
     Horse.deleteMany({}).then(() => {
       db.close().then(() => {
         console.log('db disconnected');

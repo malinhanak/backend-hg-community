@@ -1,50 +1,89 @@
-# Horse Galore Backend Documentation
+<img alt="Last commit" src="https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/malinhanak/backend-hg-community?style=for-the-badge"> <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed-raw/malinhanak/backend-hg-community?style=for-the-badge"> <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/malinhanak/backend-hg-community?style=for-the-badge">
 
-## Purpose
+# Horse Galore [Backend Project]
 
-This is the REST API for the (future) site of Horse Galore, a project for a
-community page with horse interest and RPG.
+As a whole Horse Galore is a project to build a community / RPG platform for what used to be called _members stables_ or
+_internet stables_. It used to be a very big internet community in Sweden as well as international but the Swedish
+communities has dwiddled and only small crumbles are left even if the members and interest is still around they have no
+place to go. So this project aims to create such a place.
 
-## Development documentation
+This particular repo is only for the backend part of the project, it is based on a REST API.
 
-When the server is running, current API documentations can be found on
-`/api/docs`.
+## Demo(Images, Video links, Live Demo links)
 
-This project needs connection to a mongoDB atlas instance, using database:
-`hg-dv` and `hg_TEST`, with collections `horses` and `users`, in both. For
-development and tests.
+no demos currently...
 
-MongoDB connections via mongoose needs to be altered in `db.js`, if
-collaborators for the project need to access the current mongo instances, let me
-know and I will arrange access.
+## Technologies Used
 
-To start run `npm start`, to test run `npm test`.
+### Major Dependencies
 
-## Dependencies
+- NodeJS
+- Express
+- Mongoose
+- Sinon
+- Mocha
+- Chai
 
-The app is build with NodeJs, using express. Database is mongoDB, using mongoose
-for connection.
+### createSlug
 
-## Connections and middlewares
+Because each horse stored in the database has to have a unique name, and all horses need a slug based on said name it
+was decided to write a helper function to create the slug, of the given name, to minimize user error by having them type
+the slug as well, this way it is automated.
 
-The connection to the db is exported from `db.js` and is used for both `app.js`
-and for tests.
+### asyncWrapper
 
-In the `app.js`, you'll find all the middlewares, both for errorhandling, and
-responsible for calling/handling the routes. This is also where the application
-formally connecs to the database and boots up to listen.
+Because I do think try/catch block makes the code look bloated and messy (even if they are create), I decided to wrapp
+all controllers, that are used byt the routes in asyncWrappers, their by escaping the try/catch mess of it all but still
+catching potentiall error that couldn't be handled directly. For example a error bubbling up from the DB.
 
-## Routes
+Inspiration for this asyncWrapper was taken from the third party library express-async-handler by Alexei Bazhenov.
+However I altered a bit and updated it to better suit me needs.
 
-Current active routers are `horseRouter.js` and `userRouter.js` founder under
-`routes`folder.
+### Test issues
 
-## Models
+There where originally a few issues getting started with the test for this project. One of the bigger hazzles was
+getting the tests to run with connections to the DB since I decided to not mock it out. After that the there was the
+issue of using done or return promise.
 
-Currently two models, `horse.js` and `user.js`. In `models`folder there is also
-a `http-error.js` "model" which is a class extending the native Error class.
+## Technical Description
 
-## Controllers
+Firstly setting up this project require mongoDB, so you need to connect to a cluster of your own. I won't desribe how to
+set up a mongoDB Atlast here, there are documentation for that on mongoDB site.
 
-Currently two controllers `horse.js` and `user.js` both found under the folder
-`controllers`.
+### Required env's
+
+```bash
+MONGO_DB_USER=********
+MONGO_DB_PASSWORD=********
+MONGO_DB=********
+```
+
+### Setup
+
+Having forked, downloaded or cloned this project you need to step up, the .env need to be added with above specified
+variables.
+
+- Start by navigationg to backend folder `cd backend`
+- Run commande `npm install`
+- To start the local server run `npm start`
+
+## Tests
+
+- _See first and second list object in setup_ if this is not already done.
+- Run command `npm test`
+
+### API Documentation
+
+When the server is running, current API documentations can be found on `/api/docs`.
+
+The docs a created with OpenAPI, ReDoc.
+
+### MongoDB Connection
+
+All connections to the DB is setup in the `db.js` there is connections string that needs to be changed to your own.
+Unless you are working on this project then you can leave the connection as is.
+
+## Future developments
+
+It would be fun to convert this REST API to using GraphQL later, but for competence development reasons it was decided
+to start off with a REST API.
