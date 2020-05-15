@@ -1,5 +1,4 @@
 process.env.NODE_ENV = 'Test';
-// require('should');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
@@ -12,10 +11,8 @@ const db = require('../db');
 
 describe('Horse CRUD test', function () {
   before(function (done) {
-    const testData = { ...horseDataBody };
     db.connect().then(() => {
-      testData.name = 'Amelina W';
-      testData.slug = 'amelina-w';
+      const testData = { ...horseReqBody, name: 'Amelina W', slug: 'amelina-w' };
 
       const horse = new Horse(testData);
       horse.save();
@@ -24,9 +21,7 @@ describe('Horse CRUD test', function () {
   });
 
   it('should post a horse a return horse object', function () {
-    const testData = { ...horseReqBody };
-    testData.name = 'Flying Dreams W';
-    testData.slug = 'flying-dreams-w';
+    const testData = { ...horseReqBody, name: 'Flying Dreams W', slug: 'flying-dreams-w' };
 
     return agent
       .post('/api/horses/')
@@ -41,7 +36,6 @@ describe('Horse CRUD test', function () {
 
   it('should not post if name is missing in request body', function () {
     const testData = { ...horseReqBody };
-    delete testData.name;
 
     return agent
       .post('/api/horses')
