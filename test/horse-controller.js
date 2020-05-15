@@ -10,15 +10,26 @@ const app = require('../app');
 const db = require('../db');
 const { createSlug } = require('../utils/createSlug');
 
+const Mongoose = require('mongoose').Mongoose;
+const mongoose = new Mongoose();
+const MockMongoose = require('mock-mongoose').MockMongoose;
+const mockMongoose = new MockMongoose(mongoose);
+
 describe('Horse Controller', function () {
   before(function (done) {
-    const testData = { ...horseDataBody, name: 'Dreaming Big Q', slug: createSlug('Dreaming Big Q') };
-    db.connect()
-      .then(() => {
-        const horse = new Horse(testData);
-        return horse.save();
-      })
-      .then(() => done());
+    mockMongoose.prepareStorage().then(function () {
+      mongoose.connect(
+        'mongodb://example.com/TestingDB',
+        {
+          useUnifiedTopology: true,
+          useNewUrlParser: true,
+          useCreateIndex: true,
+        },
+        (err) => {
+          done(err);
+        },
+      );
+    });
   });
 
   it('should create a new horse', function (done) {
@@ -78,9 +89,8 @@ describe('Horse Controller', function () {
 
   it('should return one requested horse, full document', function (done) {
     const req = {
-      params: { slug: 'dreaming-big-q' },
+      params: { slug: 'rocka-fellow-q' },
     };
-
     const res = {
       statusCode: 500,
       status: function (code) {
@@ -93,11 +103,12 @@ describe('Horse Controller', function () {
     horseController
       .getBySlug(req, res, () => {})
       .then((horse) => {
+        console.log('HORSE', horse);
         expect(res.statusCode).to.equal(200);
         expect(horse).to.be.an('object');
         expect(horse).to.have.property('_id');
         expect(horse).to.have.property('name').that.is.a('string');
-        expect(horse).to.have.property('slug', 'dreaming-big-q').that.is.a('string');
+        expect(horse).to.have.property('slug', 'rocka-fellow-q').that.is.a('string');
         expect(horse).to.have.property('ownership').that.is.a('object').that.has.property('owner');
         done();
       });
