@@ -17,7 +17,7 @@ This particular repo is only for the backend part of the project, it is based on
 
 ## Demo(Images, Video links, Live Demo links)
 
-no demos currently....
+no demos currently...
 
 ## Technologies Used
 
