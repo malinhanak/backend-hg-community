@@ -1,35 +1,25 @@
+process.env.NODE_ENV = 'Test';
 require('should');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
-
-process.env.NODE_ENV = 'Test';
 
 const app = require('../app');
 const Horse = mongoose.model('Horse');
 const agent = request.agent(app);
 const horseReqBody = require('../utils/horseBodyTest');
 const db = require('../db');
+const { createSlug } = require('../utils/createSlug');
 
 describe('Horse CRUD test', function () {
-  before(function (done) {
-    db.connect().then(() => {
-      const horse = new Horse(horseReqBody);
-      horse.save();
-      done();
-    });
-  });
+  it('should post a horse a return horse object', () => {
+    const testData = { ...horseReqBody, name: 'Princess Hemlock', slug: createSlug('Princess Hemlock') };
 
-  it('should post a horse a return horse object', function (done) {
-    const horsePost = horseReqBody;
-
-    agent
+    return agent
       .post('/api/horses/')
-      .send(horsePost)
+      .send(testData)
       .expect(201)
-      .end((err, result) => {
-        if (err) return done(err);
-
+      .then((result) => {
         result.body.horse.should.have.property('_id');
         result.body.horse.should.have.property('name');
         result.body.horse.should.have.property('slug');
@@ -44,49 +34,43 @@ describe('Horse CRUD test', function () {
         result.body.horse.ownership.owner.should.have.property('id');
         result.body.horse.should.have.property('description');
         result.body.horse.should.have.property('img');
-
-        done();
-      });
+      })
+      .catch((err) => err);
   });
 
-  it('should not post if name is missing in request body', function (done) {
-    const horsePost = horseReqBody;
-    delete horsePost.name;
+  it('should not post if name is missing in request body', function () {
+    const testData = { ...horseReqBody };
 
-    agent
+    return agent
       .post('/api/horses')
-      .send(horsePost)
+      .send(testData)
       .expect(422)
-      .end(function (err, result) {
-        if (err) return done(err);
-
+      .then((result) => {
         result.status.should.equal(422);
-        done();
-      });
+        result.text.message.should.equal('Invalid inputs');
+      })
+      .catch((err) => err);
   });
 
-  it('should get all horses', function (done) {
-    agent
+  it('should get all horses', function () {
+    return agent
       .get('/api/horses/')
       .expect(200)
-      .end((err, result) => {
-        console.log('err', err);
-        if (err) return done(err);
-
+      .then((result) => {
         expect(result.body).to.be.a('Object');
         expect(result.body.horses).to.be.a('Array');
         expect(result.body.horses[0]).to.have.property('name');
         done();
-      });
+      })
+      .catch((err) => err);
   });
 
-  after(function (done) {
+  after(function () {
     Horse.deleteMany({}).then(() => {
       db.close().then(() => {
         console.log('db disconnected');
         app.server.close(() => {
           console.log('server closed');
-          done();
         });
       });
     });
