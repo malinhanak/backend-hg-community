@@ -8,10 +8,11 @@ const horseController = require('../controllers/horse');
 const horseDataBody = require('../utils/horseBodyTest');
 const app = require('../app');
 const db = require('../db');
+const { createSlug } = require('../utils/createSlug');
 
 describe('Horse Controller', function () {
   before(function (done) {
-    const testData = { ...horseDataBody, name: 'Dreaming Big Q', slug: 'dreaming-big-q' };
+    const testData = { ...horseDataBody, name: 'Dreaming Big Q', slug: createSlug('Dreaming Big Q') };
     db.connect()
       .then(() => {
         const horse = new Horse(testData);
@@ -21,7 +22,7 @@ describe('Horse Controller', function () {
   });
 
   it('should create a new horse', function (done) {
-    const testData = { ...horseDataBody, name: 'Rocka Fellow Q', slug: 'Rocka Fellow Q' };
+    const testData = { ...horseDataBody, name: 'Rocka Fellow Q', slug: createSlug('Rocka Fellow Q') };
 
     const req = {
       body: testData,

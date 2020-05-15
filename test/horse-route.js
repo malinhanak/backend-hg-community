@@ -8,11 +8,12 @@ const Horse = mongoose.model('Horse');
 const agent = request.agent(app);
 const horseReqBody = require('../utils/horseBodyTest');
 const db = require('../db');
+const { createSlug } = require('../utils/createSlug');
 
 describe('Horse CRUD test', function () {
   before(function (done) {
     db.connect().then(() => {
-      const testData = { ...horseReqBody, name: 'Amelina W', slug: 'amelina-w' };
+      const testData = { ...horseReqBody, name: 'Amelina W', slug: createSlug('Amelina W') };
 
       const horse = new Horse(testData);
       horse.save();
@@ -21,7 +22,7 @@ describe('Horse CRUD test', function () {
   });
 
   it('should post a horse a return horse object', function () {
-    const testData = { ...horseReqBody, name: 'Flying Dreams W', slug: 'flying-dreams-w' };
+    const testData = { ...horseReqBody, name: 'Flying Dreams W', slug: createSlug('Flying Dreams W') };
 
     return agent
       .post('/api/horses/')
