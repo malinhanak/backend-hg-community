@@ -1,3 +1,5 @@
+https://img.shields.io/github/last-commit/malinhanak/backend-hg-community?style=for-the-badge
+
 # Horse Galore [Backend Project]
 
 As a whole Horse Galore is a project to build a community / RPG platform for what used to be called _members stables_ or
