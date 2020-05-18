@@ -1,74 +1,61 @@
 process.env.NODE_ENV = 'Test';
+const util = require('util');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
 const app = require('../app');
 const Horse = mongoose.model('Horse');
-const agent = request.agent(app);
 const horseTestData = require('../assets/horseTestData');
 const db = require('../db');
 const { createSlug } = require('../utils/createSlug');
 
-describe('Horse CRUD test', function () {
-  before(function (done) {
-    db.connect().then(() => {
-      const testData = { ...horseTestData, name: 'Amelina W', slug: createSlug('Amelina W') };
-
-      const horse = new Horse(testData);
-      horse.save();
-      done();
-    });
+describe('Horse CRUD', function () {
+  before(async () => {
+    await db.connect();
   });
 
-  it('should post a horse a return horse object', function () {
-    const testData = { ...horseTestData, name: 'Flying Dreams W', slug: createSlug('Flying Dreams W') };
+  it('should successfully create a new horse', async () => {
+    const testData = {
+      ...horseTestData,
+      name: 'Flying Dreams W',
+      slug: createSlug('Flying Dreams W'),
+      _id: '5ec2645a4716af3d3cabc383',
+    };
 
-    return agent
-      .post('/api/horses/')
-      .send(testData)
-      .expect(201)
-      .then((result) => {
-        expect(result.body.horse).to.be.a('object');
-        expect(result.body.horse).to.have.property('_id');
-      })
-      .catch((err) => err);
+    const res = await request(app).post('/api/horses/').send(testData).expect(201);
+
+    expect(res.body.message).to.equal('Flying Dreams W skapades utan problem');
+    expect(res.statusCode).to.equal(201);
   });
 
-  it('should not post if name is missing in request body', function () {
+  it('should not post if name is missing in request body', async () => {
     const testData = { ...horseTestData };
 
-    return agent
-      .post('/api/horses')
-      .send(testData)
-      .expect(422)
-      .then((result) => {
-        expect(result.statusCode).to.equal(422);
-      })
-      .catch((err) => err);
+    const res = await request(app).post('/api/horses').send(testData).expect(422);
+
+    expect(res.statusCode).to.equal(422);
+    expect(res.body).to.have.property('error');
+    expect(res.body).to.have.property('message').to.eql('Invalid inputs');
+    expect(res.body.error[0]).to.have.property('msg').to.eql('Name is required');
   });
 
-  it('should get all horses', function () {
-    return agent
-      .get('/api/horses/')
-      .expect(200)
-      .then((result) => {
-        expect(result.body.horses).to.be.a('Array');
-        expect(result.body.horses[0]).to.have.property('name');
-      })
-      .catch((err) => err);
+  it('should get all horses', async () => {
+    const res = await request(app).get('/api/horses/').expect(200);
+    expect(res.body).to.have.property('horses');
+    expect(res.body.horses).to.deep.include.members([
+      {
+        _id: '5ec2645a4716af3d3cabc383',
+        id: '5ec2645a4716af3d3cabc383',
+        name: 'Flying Dreams W',
+        slug: 'flying-dreams-w',
+      },
+    ]);
   });
 
-  after(function (done) {
-    console.log('closing horse-route');
-    Horse.deleteMany({}).then(() => {
-      db.close().then(() => {
-        console.log('db disconnected');
-        app.server.close(() => {
-          console.log('server closed');
-          done();
-        });
-      });
-    });
+  after(async () => {
+    await Horse.deleteMany({});
+    await db.close();
+    await util.promisify((cb) => app.server.close(cb))();
   });
 });
