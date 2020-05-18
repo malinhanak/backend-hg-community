@@ -37,6 +37,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "live-server": "^1.2.1",
     "mocha": "^7.1.2",
+    "mock-mongoose": "^8.0.1-a",
     "redoc-cli": "^0.9.7",
     "sinon": "^9.0.2",
     "supertest": "^4.0.2",
