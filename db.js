@@ -1,35 +1,29 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const MockMongoose = require('mock-mongoose').MockMongoose;
 
-const DB_URI = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@malins-cluster-155rd.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
-const DB_URI_TEST = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@malins-cluster-155rd.mongodb.net/hg_TEST?retryWrites=true&w=majority`;
-
-function connect() {
-  return new Promise((resolve, reject) => {
-    if (process.env.NODE_ENV === 'Test') {
-      mongoose
-        .connect(DB_URI_TEST, {
-          useUnifiedTopology: true,
-          useNewUrlParser: true,
-          useCreateIndex: true,
-        })
-        .then((res, err) => {
-          if (err) return reject(err);
-          resolve();
-        });
-    } else {
-      mongoose
-        .connect(DB_URI, {
-          useUnifiedTopology: true,
-          useNewUrlParser: true,
-          useCreateIndex: true,
-        })
-        .then((res, err) => {
-          if (err) return reject(err);
-          resolve();
-        });
-    }
-  });
+async function connect() {
+  if (process.env.NODE_ENV === 'TEST') {
+    const mockMongoose = new MockMongoose(mongoose);
+    await mockMongoose.prepareStorage();
+    await mongoose.connect('mongodb://example.com/TestingDB', {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
+  } else {
+    await mongoose.connect(process.env.MONGO_DB_URI, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
+    mongoose.connection.on('connected', () => {
+      resolve();
+    });
+    mongoose.connection.on('error', (err) => {
+      reject();
+    });
+  }
 }
 
 function close() {

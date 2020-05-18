@@ -30,7 +30,7 @@ app.use((error, req, res, next) => {
 db.connect()
   .then(() => {
     app.server = app.listen(PORT, () => {
-      console.log('DB is running, listening on port ' + PORT);
+      console.log('App is running on port  ' + PORT);
     });
   })
   .catch((err) => {
