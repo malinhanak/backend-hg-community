@@ -16,6 +16,7 @@ describe('Horse CRUD', function () {
   });
 
   it('should successfully create a new horse', async () => {
+    // Arrange
     const testData = {
       ...horseTestData,
       name: 'Flying Dreams W',
@@ -23,17 +24,22 @@ describe('Horse CRUD', function () {
       _id: '5ec2645a4716af3d3cabc383',
     };
 
+    // Act
     const res = await request(app).post('/api/horses/').send(testData).expect(201);
 
+    // Assert
     expect(res.body.message).to.equal('Flying Dreams W skapades utan problem');
     expect(res.statusCode).to.equal(201);
   });
 
   it('should not post if name is missing in request body', async () => {
+    // Arrange
     const testData = { ...horseTestData };
 
+    // Act
     const res = await request(app).post('/api/horses').send(testData).expect(422);
 
+    // Assert
     expect(res.statusCode).to.equal(422);
     expect(res.body).to.have.property('error');
     expect(res.body).to.have.property('message').to.eql('Invalid inputs');
@@ -41,7 +47,10 @@ describe('Horse CRUD', function () {
   });
 
   it('should get all horses', async () => {
+    // Act
     const res = await request(app).get('/api/horses/').expect(200);
+
+    // Assert
     expect(res.body).to.have.property('horses');
     expect(res.body.horses).to.deep.include.members([
       {

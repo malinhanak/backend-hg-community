@@ -5,40 +5,37 @@ const expect = require('chai').expect;
 const { createSlug } = require('../utils/createSlug');
 
 describe('CREATE HORSE SLUG', function () {
-  it('should not return the name unchanged', function (done) {
+  it('should not return the name unchanged', async () => {
     // Arrange
     const name = 'Flying Dreams W';
 
     // Act
-    const result = createSlug(name);
+    const result = await createSlug(name);
 
     // Assert
     expect(result).not.to.equal('Flying Dreams W');
-    done();
   });
 
-  it('should not return empty string', function (done) {
+  it('should not return empty string', async () => {
     // Arrange
     const name = 'Flying Dreams W';
 
     // Act
-    const result = createSlug(name);
+    const result = await createSlug(name);
 
     // Assert
     expect(result).not.to.equal('');
-    done();
   });
 
-  it('should create a valid slug from name with the type of string', function (done) {
+  it('should create a valid slug from name with the type of string', async () => {
     // Arrange
     const name = 'Flying Dreams W';
 
     // Act
-    const result = createSlug(name);
+    const result = await createSlug(name);
 
     // Assert
     expect(result).to.equal('flying-dreams-w');
     expect(result).to.be.a('string');
-    done();
   });
 });
