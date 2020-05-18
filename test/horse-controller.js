@@ -103,7 +103,6 @@ describe('Horse Controller', function () {
     horseController
       .getBySlug(req, res, () => {})
       .then((horse) => {
-        console.log('HORSE', horse);
         expect(res.statusCode).to.equal(200);
         expect(horse).to.be.an('object');
         expect(horse).to.have.property('_id');
