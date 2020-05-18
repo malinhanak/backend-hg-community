@@ -17,9 +17,10 @@ async function create(req, res, next) {
 
   await createdHorse.save();
 
-  res.status(201).json({ horse: createdHorse });
+  res.status(201);
+  return res.json({ message: `${createdHorse.name} skapades utan problem` });
 
-  return createdHorse;
+  // return { message: `${createdHorse.name} skapades utan problem` };
 }
 
 async function getAll(req, res, next) {
