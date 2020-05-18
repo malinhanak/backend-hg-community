@@ -6,14 +6,14 @@ const expect = require('chai').expect;
 const app = require('../app');
 const Horse = mongoose.model('Horse');
 const agent = request.agent(app);
-const horseReqBody = require('../utils/horseBodyTest');
+const horseTestData = require('../assets/horseTestData');
 const db = require('../db');
 const { createSlug } = require('../utils/createSlug');
 
 describe('Horse CRUD test', function () {
   before(function (done) {
     db.connect().then(() => {
-      const testData = { ...horseReqBody, name: 'Amelina W', slug: createSlug('Amelina W') };
+      const testData = { ...horseTestData, name: 'Amelina W', slug: createSlug('Amelina W') };
 
       const horse = new Horse(testData);
       horse.save();
@@ -22,7 +22,7 @@ describe('Horse CRUD test', function () {
   });
 
   it('should post a horse a return horse object', function () {
-    const testData = { ...horseReqBody, name: 'Flying Dreams W', slug: createSlug('Flying Dreams W') };
+    const testData = { ...horseTestData, name: 'Flying Dreams W', slug: createSlug('Flying Dreams W') };
 
     return agent
       .post('/api/horses/')
@@ -36,7 +36,7 @@ describe('Horse CRUD test', function () {
   });
 
   it('should not post if name is missing in request body', function () {
-    const testData = { ...horseReqBody };
+    const testData = { ...horseTestData };
 
     return agent
       .post('/api/horses')

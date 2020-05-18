@@ -4,15 +4,15 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 const Horse = require('../models/horse');
-const horseController = require('../controllers/horse');
-const horseDataBody = require('../utils/horseBodyTest');
+const horseController = require('../controllers/horse-controller');
+const horseTestData = require('../assets/horseTestData');
 const app = require('../app');
 const db = require('../db');
 const { createSlug } = require('../utils/createSlug');
 
 describe('Horse Controller', function () {
   before(function (done) {
-    const testData = { ...horseDataBody, name: 'Dreaming Big Q', slug: createSlug('Dreaming Big Q') };
+    const testData = { ...horseTestData, name: 'Dreaming Big Q', slug: createSlug('Dreaming Big Q') };
     db.connect()
       .then(() => {
         const horse = new Horse(testData);
@@ -22,7 +22,7 @@ describe('Horse Controller', function () {
   });
 
   it('should create a new horse', function (done) {
-    const testData = { ...horseDataBody, name: 'Rocka Fellow Q', slug: createSlug('Rocka Fellow Q') };
+    const testData = { ...horseTestData, name: 'Rocka Fellow Q', slug: createSlug('Rocka Fellow Q') };
 
     const req = {
       body: testData,
