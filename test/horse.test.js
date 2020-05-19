@@ -71,7 +71,7 @@ describe('Horse CRUD', function () {
 
     const res = await request(app)
       .patch('/api/horses/flying-dreams-w')
-      .send({ name: 'Dream O-Big', slug: createSlug('Dream O-Big') })
+      .send({ name: 'Dream O-Big' })
       .expect(200);
 
     expect(res.body.message).to.equal('Flying Dreams W har nu blivit uppdaterad');
