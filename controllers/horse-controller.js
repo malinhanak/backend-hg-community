@@ -56,12 +56,16 @@ async function update(req, res, next) {
   }
 
   const newHorseData = req.body;
+  const responseMsg = newHorseData.name
+    ? `${newHorseData.name} [Prev. ${horse.name} ] har nu blivit uppdaterad`
+    : `${horse.name} har nu blivit uppdaterad`;
+
   if (newHorseData.slug) return next(new HttpError('Redigering av slug är inte tillåtet', 500));
   if (newHorseData.name) newHorseData.slug = createSlug(newHorseData.name);
 
   await Horse.updateOne(newHorseData);
 
-  res.status(200).json({ message: `${horse.name} har nu blivit uppdaterad` });
+  res.status(200).json({ message: responseMsg });
 }
 
 async function remove(req, res, next) {
