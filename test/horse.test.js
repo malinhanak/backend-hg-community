@@ -17,6 +17,8 @@ describe('Horse CRUD', function () {
 
   it('should successfully create a new horse', async () => {
     // Arrange
+    const url = '/api/horses/';
+    const expectedMessage = 'Flying Dreams W skapades utan problem';
     const testData = {
       ...horseTestData,
       name: 'Flying Dreams W',
@@ -25,19 +27,20 @@ describe('Horse CRUD', function () {
     };
 
     // Act
-    const res = await request(app).post('/api/horses/').send(testData).expect(201);
+    const res = await request(app).post(url).send(testData).expect(201);
 
     // Assert
-    expect(res.body.message).to.equal('Flying Dreams W skapades utan problem');
+    expect(res.body.message).to.equal(expectedMessage);
     expect(res.statusCode).to.equal(201);
   });
 
   it('should not post if name is missing in request body', async () => {
     // Arrange
     const testData = { ...horseTestData };
+    const url = '/api/horses';
 
     // Act
-    const res = await request(app).post('/api/horses').send(testData).expect(422);
+    const res = await request(app).post(url).send(testData).expect(422);
 
     // Assert
     expect(res.statusCode).to.equal(422);
@@ -47,48 +50,67 @@ describe('Horse CRUD', function () {
   });
 
   it('should get a horse by slug', async () => {
+    // Arrange
+    const url = '/api/horses/flying-dreams-w';
+    const expectedMessage = 'Flying Dreams W';
+
     // Act
-    const res = await request(app).get('/api/horses/flying-dreams-w').expect(200);
+    const res = await request(app).get(url).expect(200);
 
     // Assert
     expect(res.body).to.have.property('horse');
     expect(res.body.horse).to.be.a('object');
-    expect(res.body.horse).to.have.property('name').to.equal('Flying Dreams W');
+    expect(res.body.horse).to.have.property('name', expectedMessage);
   });
 
   it('should get all horses', async () => {
+    // Arrange
+    const url = '/api/horses/';
+
     // Act
-    const res = await request(app).get('/api/horses/').expect(200);
+    const res = await request(app).get(url).expect(200);
 
     // Assert
     expect(res.body).to.have.property('horses');
   });
 
   it('should edit a horse', async () => {
-    const toUpdate = await request(app).get('/api/horses/flying-dreams-w').expect(200);
+    // Arrange
+    const req = { body: { name: 'Dream O-Big' } };
+    const url = '/api/horses/flying-dreams-w';
+    const expectedMessage = req.body['name']
+      ? 'Dream O-Big [Prev. Flying Dreams W ] har nu blivit uppdaterad'
+      : 'Flying Dreams W har nu blivit uppdaterad';
 
-    expect(toUpdate.body.horse).to.have.property('name').to.equal('Flying Dreams W');
+    // Act
+    const res = await request(app).patch(url).send(req.body).expect(200);
 
-    const res = await request(app)
-      .patch('/api/horses/flying-dreams-w')
-      .send({ name: 'Dream O-Big' })
-      .expect(200);
+    // Assert
+    expect(res.body).to.have.property('message', expectedMessage);
+  });
 
-    expect(res.body.message).to.equal('Flying Dreams W har nu blivit uppdaterad');
+  it('should after a name update not find a horse with slug: flying-dreams-w', async () => {
+    // Arrange
+    const expectedMessage = 'Could not find horse with slug flying-dreams-w';
+    const url = '/api/horses/flying-dreams-w';
 
-    const oldHorseCheck = await request(app).get('/api/horses/flying-dreams-w').expect(404);
+    // Act
+    const res = await request(app).get(url).expect(404);
 
-    expect(oldHorseCheck.body.message).to.equal('Could not find horse with slug flying-dreams-w');
-
-    const updated = await request(app).get('/api/horses/dream-o-big').expect(200);
-
-    expect(updated.body.horse).to.have.property('name').to.equal('Dream O-Big');
+    // Assert
+    expect(res.body).to.have.property('message', expectedMessage);
   });
 
   it('should delete a horse', async () => {
-    const res = await request(app).delete('/api/horses/dream-o-big').expect(200);
+    // Arrange
+    const expectedMessage = 'Dream O-Big är nu raderad.';
+    const url = '/api/horses/dream-o-big';
 
-    expect(res.body).to.have.property('message').to.equal('Dream O-Big är nu raderad.');
+    // Act
+    const res = await request(app).delete(url).expect(200);
+
+    // Assert
+    expect(res.body).to.have.property('message', expectedMessage);
   });
 
   after(async () => {
