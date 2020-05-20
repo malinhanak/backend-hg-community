@@ -18,7 +18,7 @@ describe('Horse CRUD', function () {
   it('should successfully create a new horse', async () => {
     // Arrange
     const url = '/api/horses/';
-    const expectedMessage = 'Flying Dreams W skapades utan problem';
+    const expectedResponse = 'Flying Dreams W skapades utan problem';
     const testData = {
       ...horseTestData,
       name: 'Flying Dreams W',
@@ -30,7 +30,7 @@ describe('Horse CRUD', function () {
     const res = await request(app).post(url).send(testData).expect(201);
 
     // Assert
-    expect(res.body.message).to.equal(expectedMessage);
+    expect(res.body.message).to.equal(expectedResponse);
     expect(res.statusCode).to.equal(201);
   });
 
@@ -38,29 +38,31 @@ describe('Horse CRUD', function () {
     // Arrange
     const testData = { ...horseTestData };
     const url = '/api/horses';
+    const expectedResponse = {
+      error: [{ location: 'body', msg: 'Name is required', param: 'name' }],
+      message: 'Invalid inputs',
+    };
 
     // Act
     const res = await request(app).post(url).send(testData).expect(422);
 
     // Assert
-    expect(res.statusCode).to.equal(422);
-    expect(res.body).to.have.property('error');
-    expect(res.body).to.have.property('message').to.eql('Invalid inputs');
-    expect(res.body.error[0]).to.have.property('msg').to.eql('Name is required');
+    expect(res.body).to.eql(expectedResponse);
   });
 
   it('should get a horse by slug', async () => {
     // Arrange
     const url = '/api/horses/flying-dreams-w';
-    const expectedMessage = 'Flying Dreams W';
+    const expectedResponse = 'Flying Dreams W';
 
     // Act
     const res = await request(app).get(url).expect(200);
 
     // Assert
-    expect(res.body).to.have.property('horse');
-    expect(res.body.horse).to.be.a('object');
-    expect(res.body.horse).to.have.property('name', expectedMessage);
+    expect(res.body)
+      .to.have.property('horse')
+      .to.be.a('object')
+      .to.have.property('name', expectedResponse);
   });
 
   it('should get all horses', async () => {
@@ -78,7 +80,7 @@ describe('Horse CRUD', function () {
     // Arrange
     const req = { body: { name: 'Dream O-Big' } };
     const url = '/api/horses/flying-dreams-w';
-    const expectedMessage = req.body['name']
+    const expectedResponse = req.body['name']
       ? 'Dream O-Big [Prev. Flying Dreams W ] har nu blivit uppdaterad'
       : 'Flying Dreams W har nu blivit uppdaterad';
 
@@ -86,31 +88,31 @@ describe('Horse CRUD', function () {
     const res = await request(app).patch(url).send(req.body).expect(200);
 
     // Assert
-    expect(res.body).to.have.property('message', expectedMessage);
+    expect(res.body).to.have.property('message', expectedResponse);
   });
 
   it('should after a name update not find a horse with slug: flying-dreams-w', async () => {
     // Arrange
-    const expectedMessage = 'Could not find horse with slug flying-dreams-w';
+    const expectedResponse = 'Could not find horse with slug flying-dreams-w';
     const url = '/api/horses/flying-dreams-w';
 
     // Act
     const res = await request(app).get(url).expect(404);
 
     // Assert
-    expect(res.body).to.have.property('message', expectedMessage);
+    expect(res.body).to.have.property('message', expectedResponse);
   });
 
   it('should delete a horse', async () => {
     // Arrange
-    const expectedMessage = 'Dream O-Big är nu raderad.';
+    const expectedResponse = 'Dream O-Big är nu raderad.';
     const url = '/api/horses/dream-o-big';
 
     // Act
     const res = await request(app).delete(url).expect(200);
 
     // Assert
-    expect(res.body).to.have.property('message', expectedMessage);
+    expect(res.body).to.have.property('message', expectedResponse);
   });
 
   after(async () => {
