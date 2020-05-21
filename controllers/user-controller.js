@@ -24,4 +24,4 @@ async function create(req, res, next) {
   return res.json({ message: 'Användaren är nu skapad, och det går att logga in.' });
 }
 
-exports.create = create;
+exports.create = asyncWrapper(create);
