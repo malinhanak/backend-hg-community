@@ -24,4 +24,18 @@ async function create(req, res, next) {
   return res.json({ message: 'Användaren är nu skapad, och det går att logga in.' });
 }
 
+async function getAll(req, res, next) {
+  const users = await User.find({});
+
+  if (!users.length) {
+    return next(new HorseNotFoundError(`Det finns inga registrerade medlemmar`));
+  }
+
+  res.status(200);
+  return res.json({
+    users: users.map((user) => user.toObject({ getters: true })),
+  });
+}
+
 exports.create = asyncWrapper(create);
+exports.getAll = asyncWrapper(getAll);
