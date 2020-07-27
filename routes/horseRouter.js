@@ -15,4 +15,8 @@ horseRouter
   .patch(horseControllers.update)
   .delete(horseControllers.remove);
 
+horseRouter.route('/breeding/status').patch(horseControllers.updateBreedingStatus);
+
+horseRouter.route('/transfer/:slug').patch(horseControllers.transfer);
+
 module.exports = horseRouter;

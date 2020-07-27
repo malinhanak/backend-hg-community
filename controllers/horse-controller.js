@@ -31,6 +31,7 @@ async function getBySlug(req, res, next) {
   res.status(200);
   return res.json({ horse });
 }
+
 async function create(req, res, next) {
   const errors = validationResult(req);
 
@@ -80,8 +81,42 @@ async function remove(req, res, next) {
   res.status(200).json({ message: `${horse.name} är nu raderad.` });
 }
 
+async function updateBreedingStatus(req, res, next) {
+  const slug = req.body.slug;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  const status = horse.breeding.status ? false : true;
+
+  await Horse.updateOne({ slug: slug }, { 'breeding.status': status });
+
+  res
+    .status(200)
+    .json({ message: `${horse.name} är nu ${status ? 'aktiv' : 'inaktiv'} inom avel.` });
+}
+
+async function transfer(req, res, next) {
+  const slug = req.params.slug;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  const newOwner = req.body;
+
+  await Horse.updateOne({ slug: slug }, { 'ownership.owner': newOwner });
+
+  res.status(200).json({ message: `${horse.name} har nu blivit flyttad till ${newOwner.name}` });
+}
+
 exports.create = asyncWrapper(create);
 exports.update = asyncWrapper(update);
 exports.remove = asyncWrapper(remove);
+exports.updateBreedingStatus = asyncWrapper(updateBreedingStatus);
+exports.transfer = asyncWrapper(transfer);
 exports.getAll = asyncWrapper(getAll);
 exports.getBySlug = asyncWrapper(getBySlug);
