@@ -1,5 +1,4 @@
 process.env.NODE_ENV = 'Test';
-const util = require('util');
 const request = require('supertest');
 const expect = require('chai').expect;
 
