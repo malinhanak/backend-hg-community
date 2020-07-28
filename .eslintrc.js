@@ -4,7 +4,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  plugins: ['plugin:prettier/recommended'],
+  plugins: ['prettier'],
   extends: ['standard'],
   globals: {
     Atomics: 'readonly',
