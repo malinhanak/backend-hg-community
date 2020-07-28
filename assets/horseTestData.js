@@ -28,4 +28,5 @@ module.exports = {
   traits: ['Snabb', 'Busig', 'Svårriden'],
   img: 'https://i.ibb.co/qktDQvk/dapplegrey.png',
   active: true,
+  forSale: false,
 };

@@ -85,6 +85,21 @@ async function updateBreedingStatus(req, res, next) {
     .json({ message: `${horse.name} är nu ${status ? 'aktiv' : 'inaktiv'} inom avel.` });
 }
 
+async function updateSaleStatus(req, res, next) {
+  const slug = req.body.slug;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  const status = horse.forSale ? false : true;
+
+  await Horse.updateOne({ slug: slug }, { forSale: status });
+
+  res.status(200).json({ message: `${horse.name} är ${status ? 'nu' : 'inte längre'} till salu` });
+}
+
 async function retire(req, res, next) {
   const slug = req.body.slug;
   const horse = await Horse.findOne({ slug: slug });
@@ -133,4 +148,5 @@ exports.update = asyncWrapper(update);
 exports.remove = asyncWrapper(remove);
 exports.retire = asyncWrapper(retire);
 exports.updateBreedingStatus = asyncWrapper(updateBreedingStatus);
+exports.updateSaleStatus = asyncWrapper(updateSaleStatus);
 exports.transfer = asyncWrapper(transfer);

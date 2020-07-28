@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const HttpError = require('./models/errors/HttpError');
-const horsesRouter = require('./routes/horseRouter');
+const horseRouter = require('./routes/horseRouter');
+const horsesRouter = require('./routes/horsesRouter');
 const userRouter = require('./routes/userRouter');
 const db = require('./db');
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 
 app.use('/api/users', userRouter);
 app.use('/api/horses', horsesRouter);
+app.use('/api/horse', horseRouter);
 app.use('/api/docs', (req, res, next) => {
   res.sendFile(path.join(__dirname + '/docs/index.html'));
 });

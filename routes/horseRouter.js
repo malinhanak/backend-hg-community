@@ -4,19 +4,18 @@ const horseControllers = require('../controllers/horse-controller');
 
 const horseRouter = express.Router();
 
-horseRouter
-  .route('/')
-  .post(createHorseValidator, horseControllers.create)
-  .get(horseControllers.getAll);
+horseRouter.route('/').post(createHorseValidator, horseControllers.create);
 
 horseRouter.route('/breeding/status').patch(horseControllers.updateBreedingStatus);
+
+horseRouter.route('/sale/status').patch(horseControllers.updateSaleStatus);
 
 horseRouter.route('/transfer/:slug').patch(horseControllers.transfer);
 
 horseRouter.route('/retire').patch(horseControllers.retire);
 
 horseRouter
-  .route('/horse/:slug')
+  .route('/:slug')
   .get(horseControllers.getBySlug)
   .patch(horseControllers.update)
   .delete(horseControllers.remove);
