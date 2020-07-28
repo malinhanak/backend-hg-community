@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const MockMongoose = require('mock-mongoose').MockMongoose;
 
 async function connect() {
-  if (process.env.NODE_ENV === 'TEST') {
+  if (process.env.NODE_ENV === 'Test') {
     const mockMongoose = new MockMongoose(mongoose);
     await mockMongoose.prepareStorage();
     await mongoose.connect('mongodb://example.com/TestingDB', {
@@ -12,17 +12,18 @@ async function connect() {
       useCreateIndex: true,
     });
   } else {
-    await mongoose.connect(process.env.MONGO_DB_URI, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-    });
-    mongoose.connection.on('connected', () => {
-      resolve();
-    });
-    mongoose.connection.on('error', (err) => {
-      reject();
-    });
+    try {
+      await mongoose.connect(process.env.MONGO_DB_URI, {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        useCreateIndex: true,
+      });
+
+      console.log(`Connected to DB`);
+    } catch (error) {
+      console.error(`Something went wrong`, err);
+      // process.exit(1)
+    }
   }
 }
 

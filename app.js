@@ -24,12 +24,15 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  return res.status(error.code).json({ message: error.message, error: error.errors }) || res.status(500);
+  return (
+    res.status(error.code).json({ message: error.message, error: error.errors }) || res.status(500)
+  );
 });
 
 db.connect()
   .then(() => {
-    app.server = app.listen(PORT, () => {
+    app.server = app.listen(process.env.NODE_ENV === 'Test' ? 4000 : PORT, () => {
+      if (process.env.NODE_ENV === 'Test') return;
       console.log('App is running on port  ' + PORT);
     });
   })
