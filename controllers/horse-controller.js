@@ -68,19 +68,6 @@ async function update(req, res, next) {
   res.status(200).json({ message: responseMsg });
 }
 
-async function remove(req, res, next) {
-  const slug = req.params.slug;
-  const horse = await Horse.findOne({ slug: slug });
-
-  if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
-  }
-
-  await Horse.deleteOne({ slug: slug });
-
-  res.status(200).json({ message: `${horse.name} är nu raderad.` });
-}
-
 async function updateBreedingStatus(req, res, next) {
   const slug = req.body.slug;
   const horse = await Horse.findOne({ slug: slug });
@@ -98,6 +85,19 @@ async function updateBreedingStatus(req, res, next) {
     .json({ message: `${horse.name} är nu ${status ? 'aktiv' : 'inaktiv'} inom avel.` });
 }
 
+async function retire(req, res, next) {
+  const slug = req.body.slug;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  await Horse.updateOne({ slug: slug }, { active: false });
+
+  res.status(200).json({ message: `${horse.name} är nu pensionerad.` });
+}
+
 async function transfer(req, res, next) {
   const slug = req.params.slug;
   const horse = await Horse.findOne({ slug: slug });
@@ -113,10 +113,24 @@ async function transfer(req, res, next) {
   res.status(200).json({ message: `${horse.name} har nu blivit flyttad till ${newOwner.name}` });
 }
 
+async function remove(req, res, next) {
+  const slug = req.params.slug;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  await Horse.deleteOne({ slug: slug });
+
+  res.status(200).json({ message: `${horse.name} är nu raderad.` });
+}
+
 exports.create = asyncWrapper(create);
-exports.update = asyncWrapper(update);
-exports.remove = asyncWrapper(remove);
-exports.updateBreedingStatus = asyncWrapper(updateBreedingStatus);
-exports.transfer = asyncWrapper(transfer);
 exports.getAll = asyncWrapper(getAll);
 exports.getBySlug = asyncWrapper(getBySlug);
+exports.update = asyncWrapper(update);
+exports.remove = asyncWrapper(remove);
+exports.retire = asyncWrapper(retire);
+exports.updateBreedingStatus = asyncWrapper(updateBreedingStatus);
+exports.transfer = asyncWrapper(transfer);

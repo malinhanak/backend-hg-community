@@ -1,32 +1,38 @@
 process.env.NODE_ENV = 'Test';
 const request = require('supertest');
-const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
 const app = require('../app');
-const Horse = mongoose.model('Horse');
 const horseTestData = require('../assets/horseTestData');
 const { createSlug } = require('../utils/createSlug');
 const db = require('../db');
-const util = require('util');
 
 describe('Horse CONTROLLER', function () {
   before(async () => {
     await db.connect();
-    const newHorse = new Horse({
-      ...horseTestData,
-      name: 'Flying Cascade',
-      slug: createSlug('Flying Cascade'),
-    });
+  });
 
-    const url = '/api/cms/horses/';
-    await request(app).post(url).send(newHorse);
+  it('should successfully create a new horse', async () => {
+    // Arrange
+    const url = '/api/horses/';
+    const expectedResponse = 'Flying Dreams W skapades utan problem';
+    const testData = {
+      ...horseTestData,
+      name: 'Flying Dreams W',
+      slug: createSlug('Flying Dreams W'),
+    };
+
+    // Act
+    const res = await request(app).post(url).send(testData).expect(201);
+
+    // Assert
+    expect(res.body.message).to.equal(expectedResponse);
   });
 
   it('should get a horse by slug', async () => {
     // Arrange
-    const url = '/api/horses/flying-cascade';
-    const expectedResponse = 'Flying Cascade';
+    const url = '/api/horses/horse/flying-dreams-w';
+    const expectedResponse = 'Flying Dreams W';
 
     // Act
     const res = await request(app).get(url).expect(200);
@@ -49,28 +55,10 @@ describe('Horse CONTROLLER', function () {
     expect(res.body).to.have.property('horses');
   });
 
-  it('should successfully create a new horse', async () => {
-    // Arrange
-    const url = '/api/horses/';
-    const expectedResponse = 'Flying Dreams W skapades utan problem';
-    const testData = {
-      ...horseTestData,
-      name: 'Flying Dreams W',
-      slug: createSlug('Flying Dreams W'),
-    };
-
-    // Act
-    const res = await request(app).post(url).send(testData).expect(201);
-
-    // Assert
-    expect(res.body.message).to.equal(expectedResponse);
-    expect(res.statusCode).to.equal(201);
-  });
-
   it('should not post if name is missing in request body', async () => {
     // Arrange
     const testData = { ...horseTestData };
-    const url = '/api/horses/';
+    const url = '/api/horses';
     const expectedResponse = {
       error: [{ location: 'body', msg: 'Name is required', param: 'name' }],
       message: 'Invalid inputs',
@@ -86,7 +74,7 @@ describe('Horse CONTROLLER', function () {
   it('should edit a horse', async () => {
     // Arrange
     const req = { body: { name: 'Dream O-Big' } };
-    const url = '/api/horses/flying-dreams-w';
+    const url = '/api/horses/horse/flying-dreams-w';
     const expectedResponse = req.body['name']
       ? 'Dream O-Big [Prev. Flying Dreams W ] har nu blivit uppdaterad'
       : 'Flying Dreams W har nu blivit uppdaterad';
@@ -101,7 +89,7 @@ describe('Horse CONTROLLER', function () {
   it('should after a name update not find a horse with slug: flying-dreams-w', async () => {
     // Arrange
     const expectedResponse = 'Could not find horse with slug flying-dreams-w';
-    const url = '/api/horses/flying-dreams-w';
+    const url = '/api/horses/horse/flying-dreams-w';
 
     // Act
     const res = await request(app).get(url).expect(404);
@@ -110,10 +98,49 @@ describe('Horse CONTROLLER', function () {
     expect(res.body).to.have.property('message', expectedResponse);
   });
 
+  it('should transfer a horse to new owner', async () => {
+    // Arrange
+    const req = { body: { id: '5f1eed9b2787253ae4e93f02', name: 'HG Moderator' } };
+    const url = '/api/horses/transfer/dream-o-big';
+    const expectedResponse = `Dream O-Big har nu blivit flyttad till ${req.body.name}`;
+
+    // Act
+    const res = await request(app).patch(url).send(req.body).expect(200);
+
+    // Assert
+    expect(res.body).to.have.property('message', expectedResponse);
+  });
+
+  it('should edit horse activity status', async () => {
+    // Arrange
+    const req = { body: { slug: 'dream-o-big' } };
+    const expectedResponse = 'Dream O-Big är nu pensionerad.';
+    const url = '/api/horses/retire';
+
+    // Act
+    const res = await request(app).patch(url).send(req.body);
+
+    // Assert
+    expect(res.body).to.have.property('message', expectedResponse);
+  });
+
+  it('update a horse breeding status', async () => {
+    // Arrange
+    const req = { body: { slug: 'dream-o-big' } };
+    const expectedResponse = 'Dream O-Big är nu aktiv inom avel.';
+    const url = '/api/horses/breeding/status';
+
+    // Act
+    const res = await request(app).patch(url).send(req.body).expect(200);
+
+    // Assert
+    expect(res.body).to.have.property('message', expectedResponse);
+  });
+
   it('should delete a horse', async () => {
     // Arrange
     const expectedResponse = 'Dream O-Big är nu raderad.';
-    const url = '/api/horses/dream-o-big';
+    const url = '/api/horses/horse/dream-o-big';
 
     // Act
     const res = await request(app).delete(url).expect(200);

@@ -9,14 +9,16 @@ horseRouter
   .post(createHorseValidator, horseControllers.create)
   .get(horseControllers.getAll);
 
-horseRouter
-  .route('/:slug')
-  .get(horseControllers.getBySlug)
-  .patch(horseControllers.update)
-  .delete(horseControllers.remove);
-
 horseRouter.route('/breeding/status').patch(horseControllers.updateBreedingStatus);
 
 horseRouter.route('/transfer/:slug').patch(horseControllers.transfer);
+
+horseRouter.route('/retire').patch(horseControllers.retire);
+
+horseRouter
+  .route('/horse/:slug')
+  .get(horseControllers.getBySlug)
+  .patch(horseControllers.update)
+  .delete(horseControllers.remove);
 
 module.exports = horseRouter;
