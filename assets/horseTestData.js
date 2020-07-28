@@ -23,7 +23,9 @@ module.exports = {
       name: 'HG Admin',
     },
   },
-  description: 'Allt om svarten är en lögn... haha, <strong>fet</strong>, <em>italic</em></ br>Line break!',
+  description:
+    'Allt om svarten är en lögn... haha, <strong>fet</strong>, <em>italic</em></ br>Line break!',
   traits: ['Snabb', 'Busig', 'Svårriden'],
   img: 'https://i.ibb.co/qktDQvk/dapplegrey.png',
+  active: true,
 };

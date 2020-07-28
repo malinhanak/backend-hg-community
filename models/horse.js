@@ -47,6 +47,7 @@ const HorseSchema = new Schema({
   description: { type: String, required: true },
   traits: [String],
   img: { type: String, required: true },
+  active: { type: Boolean, required: true },
 });
 
 HorseSchema.plugin(uniqueValidator);
