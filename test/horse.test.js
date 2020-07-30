@@ -88,7 +88,7 @@ describe('Horse CONTROLLER', function () {
 
   it('should after a name update not find a horse with slug: flying-dreams-w', async () => {
     // Arrange
-    const expectedResponse = 'Could not find horse with slug flying-dreams-w';
+    const expectedResponse = 'Hittar inte hästen med slug flying-dreams-w';
     const url = '/api/horse/flying-dreams-w';
 
     // Act

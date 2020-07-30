@@ -15,7 +15,7 @@ describe('User CRUD', function () {
   it('should successfully create a new user', async () => {
     // Arrange
     const url = '/api/users/signup';
-    const expectedResponse = 'Användaren är nu skapad, och det går att logga in.';
+    const expectedResponse = 'Användaren är nu skapad!';
     const testData = {
       ...userTestData,
       email: 'sara.levin@test.hg.se',

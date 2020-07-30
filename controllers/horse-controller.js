@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 
-const HorseNotFoundError = require('../models/errors/HorseNotFoundError');
+const EntityNotFoundError = require('../models/errors/EntityNotFoundError');
 const MissingOrInvalidInputError = require('../models/errors/MissingOrInvalidInputError');
 const HttpError = require('../models/errors/HttpError');
 const Horse = require('../models/horse');
@@ -11,7 +11,7 @@ async function getAll(req, res, next) {
   const horses = await Horse.find({}, 'name slug _id');
 
   if (!horses.length) {
-    return next(new HorseNotFoundError(`There are no horses registered or they have escaped`));
+    return next(new EntityNotFoundError(`Hittar inga hästar, eller så har alla rymt`));
   }
 
   res.status(200);
@@ -25,7 +25,7 @@ async function getBySlug(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Hittar inte hästen med slug ${slug}`));
   }
 
   res.status(200);
@@ -52,7 +52,7 @@ async function update(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   const newHorseData = req.body;
@@ -73,7 +73,7 @@ async function updateBreedingStatus(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   const status = horse.breeding.status ? false : true;
@@ -90,7 +90,7 @@ async function updateSaleStatus(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   const status = horse.forSale ? false : true;
@@ -105,7 +105,7 @@ async function retire(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   await Horse.updateOne({ slug: slug }, { active: false });
@@ -118,7 +118,7 @@ async function transfer(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   const newOwner = req.body;
@@ -133,7 +133,7 @@ async function remove(req, res, next) {
   const horse = await Horse.findOne({ slug: slug });
 
   if (!horse) {
-    return next(new HorseNotFoundError(`Could not find horse with slug ${slug}`));
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
   await Horse.deleteOne({ slug: slug });

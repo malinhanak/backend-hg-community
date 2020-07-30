@@ -8,5 +8,7 @@ const userRouter = express.Router();
 userRouter.route('/').get(userControllers.getAll);
 
 userRouter.route('/signup').post(createUserValidator, userControllers.create);
+userRouter.route('/login').post(userControllers.login);
+userRouter.route('/logout').post(userControllers.logout);
 
 module.exports = userRouter;

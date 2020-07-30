@@ -1,4 +1,4 @@
-class HorseNotFoundError extends Error {
+class EntityNotFoundError extends Error {
   constructor(message) {
     super(message);
     this.name = this.constructor.name;
@@ -6,4 +6,4 @@ class HorseNotFoundError extends Error {
   }
 }
 
-module.exports = HorseNotFoundError;
+module.exports = EntityNotFoundError;
