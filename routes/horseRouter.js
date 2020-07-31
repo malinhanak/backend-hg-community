@@ -1,23 +1,25 @@
 const express = require('express');
 const createHorseValidator = require('../validators/createHorse');
-const horseControllers = require('../controllers/horse-controller');
+const horseController = require('../controllers/horse-controller');
 
 const horseRouter = express.Router();
 
-horseRouter.route('/').post(createHorseValidator, horseControllers.create);
+horseRouter.route('/').post(createHorseValidator, horseController.create);
 
-horseRouter.route('/breeding/status').patch(horseControllers.updateBreedingStatus);
+horseRouter.route('/breeding/status').patch(horseController.updateBreedingStatus);
 
-horseRouter.route('/sale/status').patch(horseControllers.updateSaleStatus);
+horseRouter.route('/sale/status').patch(horseController.updateSaleStatus);
 
-horseRouter.route('/transfer/:slug').patch(horseControllers.transfer);
+horseRouter.route('/transfer/:slug').patch(horseController.transfer);
 
-horseRouter.route('/retire').patch(horseControllers.retire);
+horseRouter.route('/update-level/:slug').patch(horseController.updateLevel);
+
+horseRouter.route('/retire').patch(horseController.retire);
 
 horseRouter
   .route('/:slug')
-  .get(horseControllers.getBySlug)
-  .patch(horseControllers.update)
-  .delete(horseControllers.remove);
+  .get(horseController.getBySlug)
+  .patch(horseController.update)
+  .delete(horseController.remove);
 
 module.exports = horseRouter;
