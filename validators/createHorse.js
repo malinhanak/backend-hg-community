@@ -11,5 +11,4 @@ module.exports = [
   check('pedigree.sire').not().isEmpty(),
   check('pedigree.dam').not().isEmpty(),
   check('ownership.owner').not().isEmpty(),
-  check('description').not().isEmpty(),
 ];
