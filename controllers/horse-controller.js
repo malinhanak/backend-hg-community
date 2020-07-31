@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const EntityNotFoundError = require('../models/errors/EntityNotFoundError');
+const AuthorizationError = require('../models/errors/AuthorizationError');
 const MissingOrInvalidInputError = require('../models/errors/MissingOrInvalidInputError');
 const HttpError = require('../models/errors/HttpError');
 const Horse = require('../models/horse');
@@ -8,7 +9,7 @@ const { asyncWrapper } = require('../utils/asyncWrapper');
 const { createSlug } = require('../utils/createSlug');
 
 async function getAll(req, res, next) {
-  const horses = await Horse.find({}, 'name slug _id');
+  const horses = await Horse.find({}, 'name slug ownership skills');
 
   if (!horses.length) {
     return next(new EntityNotFoundError(`Hittar inga hästar, eller så har alla rymt`));
@@ -113,6 +114,24 @@ async function retire(req, res, next) {
   res.status(200).json({ message: `${horse.name} är nu pensionerad.` });
 }
 
+async function updateLevel(req, res, next) {
+  const slug = req.params.slug;
+  const discipline = req.body.discipline;
+  const maxLevel = req.body.maxLevel;
+  const horse = await Horse.findOne({ slug: slug });
+
+  if (!horse) {
+    return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
+  }
+
+  const newLevel = req.body.level + 1;
+  const response = { ...horse.skills, [discipline]: [newLevel, maxLevel] };
+
+  await Horse.updateOne({ slug: slug }, { skills: response });
+
+  res.status(200).json({ message: `${horse.name} level är nu uppdaterad` });
+}
+
 async function transfer(req, res, next) {
   const slug = req.params.slug;
   const horse = await Horse.findOne({ slug: slug });
@@ -121,7 +140,7 @@ async function transfer(req, res, next) {
     return next(new EntityNotFoundError(`Could not find horse with slug ${slug}`));
   }
 
-  const newOwner = req.body;
+  const newOwner = req.body.id;
 
   await Horse.updateOne({ slug: slug }, { 'ownership.owner': newOwner });
 
@@ -141,12 +160,24 @@ async function remove(req, res, next) {
   res.status(200).json({ message: `${horse.name} är nu raderad.` });
 }
 
+async function removeAll(req, res, next) {
+  if (!req.user || (req.user && !req.user.roles.includes('ADMIN'))) {
+    return next(new AuthorizationError('Du saknar behörighet'));
+  }
+
+  await Horse.deleteMany({});
+
+  res.status(200).json({ message: `Alla hästar är nu raderade!` });
+}
+
 exports.create = asyncWrapper(create);
 exports.getAll = asyncWrapper(getAll);
 exports.getBySlug = asyncWrapper(getBySlug);
 exports.update = asyncWrapper(update);
 exports.remove = asyncWrapper(remove);
+exports.removeAll = asyncWrapper(removeAll);
 exports.retire = asyncWrapper(retire);
 exports.updateBreedingStatus = asyncWrapper(updateBreedingStatus);
 exports.updateSaleStatus = asyncWrapper(updateSaleStatus);
 exports.transfer = asyncWrapper(transfer);
+exports.updateLevel = asyncWrapper(updateLevel);
