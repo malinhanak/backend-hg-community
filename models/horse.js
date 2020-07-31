@@ -4,8 +4,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 const SkillsSchema = new Schema({
-  discipline: { type: String, required: true, enum: ['Dressyr', 'Hoppning', 'Körning'] },
-  level: String,
+  level: Number,
+  maxLevel: Number,
 });
 
 const HorseSchema = new Schema({
@@ -18,7 +18,17 @@ const HorseSchema = new Schema({
     type: { type: String, required: true },
     cat: { type: String },
   },
-  skills: [SkillsSchema],
+  description: { type: String },
+  traits: [String],
+  img: { type: String },
+  active: { type: Boolean, required: true },
+  forSale: { type: Boolean },
+  skills: {
+    dressage: [Number],
+    jumping: [Number],
+    driving: [Number],
+    eventing: [Number],
+  },
   breeding: {
     status: { type: Boolean, required: true },
     inheritanceScore: { type: Number, required: true },
@@ -26,29 +36,15 @@ const HorseSchema = new Schema({
   offsprings: [{ type: mongoose.Types.ObjectId, ref: 'Horse' }],
   pedigree: {
     sire: { type: String, required: true },
-    sireLink: { type: String },
+    sireSlug: { type: String },
     dam: { type: String, required: true },
-    damLink: { type: String },
+    damSlug: { type: String },
   },
   ownership: {
-    owner: {
-      id: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
-      name: String,
-    },
-    renter: {
-      id: { type: mongoose.Types.ObjectId, ref: 'User' },
-      name: String,
-    },
-    caretaker: {
-      id: { type: mongoose.Types.ObjectId, ref: 'User' },
-      name: String,
-    },
+    owner: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+    renter: { type: mongoose.Types.ObjectId, ref: 'User' },
+    caretaker: { type: mongoose.Types.ObjectId, ref: 'User' },
   },
-  description: { type: String, required: true },
-  traits: [String],
-  img: { type: String, required: true },
-  active: { type: Boolean, required: true },
-  forSale: { type: Boolean },
 });
 
 HorseSchema.plugin(uniqueValidator);

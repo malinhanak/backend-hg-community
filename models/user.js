@@ -8,10 +8,10 @@ const userSchema = new Schema({
   password: { type: String, required: true, minlength: 6 },
   image: { type: String },
   horses: [{ type: mongoose.Types.ObjectId, ref: 'Horse' }],
-  characterName: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   level: { type: String, required: true },
   stable: { type: String },
-  roles: [String],
+  roles: { type: [String], required: true },
 });
 
 userSchema.plugin(uniqueValidator);
